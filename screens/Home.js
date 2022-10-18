@@ -19,7 +19,7 @@ import { Refresh } from '../components/Refresh';
 import { Loader } from '../components/Loader';
 import { InfoTextCenter } from '../components/InfoTextCenter';
 
-export const Home = () => {
+export const Home = ({ navigation }) => {
     const [coins, setCoins] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(true);
     const [textSearch, setTextSearch] = React.useState('');
@@ -71,7 +71,13 @@ export const Home = () => {
                             data={coins}
                             initialNumToRender={coins.length}
                             renderItem={({ item }) => (
-                                <TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() =>
+                                        navigation.navigate('CoinInfo', {
+                                            idCoin: item.id,
+                                            title: item.name,
+                                        })
+                                    }>
                                     <Crypto
                                         title={item.name}
                                         price={item.priceUsd}
