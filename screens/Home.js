@@ -19,6 +19,8 @@ import { Refresh } from '../components/Refresh';
 import { Loader } from '../components/Loader';
 import { InfoTextCenter } from '../components/InfoTextCenter';
 
+import { COINCAP } from '../constants/urls';
+
 export const Home = ({ navigation }) => {
     const [coins, setCoins] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(true);
@@ -27,7 +29,7 @@ export const Home = ({ navigation }) => {
     const fetchCoins = () => {
         setIsLoading(true);
         axios
-            .get('https://api.coincap.io/v2/assets')
+            .get(COINCAP)
             .then(({ data }) => {
                 let copyCoins = data.data.filter(
                     (coin) =>

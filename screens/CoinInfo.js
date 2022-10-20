@@ -1,42 +1,29 @@
-import { StatusBar } from 'expo-status-bar';
-import {
-    Text,
-    View,
-    Alert,
-    FlatList,
-    ActivityIndicator,
-    RefreshControl,
-    TouchableOpacity,
-    SafeAreaView,
-    ScrollView,
-} from 'react-native';
+import { View, Alert, ScrollView, StyleSheet } from 'react-native';
 import React, { useEffect } from 'react';
 import axios from 'axios';
-import * as NavigationBar from 'expo-navigation-bar';
 import styled from 'styled-components';
-import {
-    VictoryLine,
-    VictoryBar,
-    VictoryChart,
-    VictoryTheme,
-    VictoryLabel,
-    VictoryAxis,
-    VictoryScatter,
-    VictoryTooltip,
-    VictoryVoronoiContainer,
-} from 'victory-native';
-import moment from 'moment';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { Table, Row, Rows } from 'react-native-table-component';
+
+import { LogBox } from 'react-native';
 
 import { Refresh } from '../components/Refresh';
-import { Crypto } from '../components/Crypto';
 import { Loader } from '../components/Loader';
 import { HeaderText } from '../components/HeaderText';
+import { InfoTextCenter } from '../components/InfoTextCenter';
+import { ChartCoin } from '../components/ChartCoin';
+import { TableMarkets } from '../components/TableMarkets';
 
-import { DAYS_OF_THE_WEEK } from '../constants/date';
 import { TIME_PERIODS, PERIODS_OBJ } from '../constants/timePerionds';
+import { Details } from '../components/Details';
+import { getHistoryCoin } from '../api/getHistoryCoin';
+import { getUrlCoin, getUrlHistory, getUrlMarkets } from '../api/getUrlCoin';
+import { HEADER_MARKETS_TABLE } from '../constants/headerMarketsTable';
+import { fixedNumber, pointsInNumber } from '../api/transformNumber';
 
-const CoinSafeAreaView = styled.SafeAreaView``;
+const CoinSafeAreaView = styled.SafeAreaView`
+    padding: 0 15px;
+`;
 const CoinScrollView = styled.ScrollView``;
 
 export const CoinInfo = ({ route, navigation }) => {
@@ -55,33 +42,26 @@ export const CoinInfo = ({ route, navigation }) => {
     const [items, setItems] = React.useState(TIME_PERIODS);
 
     const fetchCoin = () => {
+        LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+        setTimePeriod(PERIODS_OBJ.TEN_MINUTES.value);
         setIsLoading(true);
         axios
-            .get(`https://api.coincap.io/v2/assets/${idCoin}`)
+            .get(getUrlCoin(idCoin))
             .then(({ data }) => {
                 setCoin(data.data);
             })
             .catch(() => Alert.alert('Error', 'Failed to load!'));
         axios
-            .get(
-                `https://api.coincap.io/v2/assets/${idCoin}/history?interval=d1`,
-            )
+            .get(getUrlMarkets(idCoin))
             .then(({ data }) => {
-                const arrHistoryCoin = data.data.map((e) => {
-                    let dateChange = JSON.stringify(moment(e.time)).slice(
-                        1,
-                        11,
-                    );
-                    let daysOfTheWeek = DAYS_OF_THE_WEEK.find(
-                        (day) => day.id === new Date(dateChange).getDay(),
-                    );
-                    return {
-                        priceUsd: Number(e.priceUsd),
-                        dateChange,
-                        daysOfTheWeek,
-                    };
+                const arrMarkets = data.data.map((e) => {
+                    return [
+                        e.exchangeId,
+                        '$' + pointsInNumber(e.priceUsd, 3),
+                        pointsInNumber(e.volumePercent, 5) + '%',
+                    ];
                 });
-                setHistoryCoin(arrHistoryCoin.slice(-15));
+                setMarkets(arrMarkets);
             })
             .catch(() => Alert.alert('Error', 'Failed to load!'))
             .finally(() => {
@@ -93,23 +73,166 @@ export const CoinInfo = ({ route, navigation }) => {
         switch (timePeriod) {
             case PERIODS_OBJ.TEN_MINUTES.value: {
                 let currentTime = Date.now();
-                let tenMinutes = currentTime - 600000;
+                let previousTime = currentTime - 720000;
                 axios
-                    .get(
-                        `https://api.coincap.io/v2/assets/${idCoin}/history?interval=m1&start=${tenMinutes}&end=${currentTime}`,
-                    )
+                    .get(getUrlHistory(idCoin, 'm1', previousTime, currentTime))
                     .then(({ data }) => {
-                        const arrHistoryCoin = data.data.map((e) => {
-                            let dateChange = moment(e.time).format('hh:mm');
-                            console.log(Number(e.priceUsd));
-                            return {
-                                priceUsd: Number(e.priceUsd),
-                                dateChange,
-                            };
-                        });
+                        const arrHistoryCoin =
+                            getHistoryCoin.getHistoryTenMinutes(data.data);
                         setHistoryCoin(arrHistoryCoin);
                     })
                     .catch(() => Alert.alert('Error', 'Failed to load!'));
+                break;
+            }
+            case PERIODS_OBJ.THIRTY_MINUTES.value: {
+                let currentTime = Date.now();
+                let previousTime = currentTime - 2100000;
+                axios
+                    .get(getUrlHistory(idCoin, 'm5', previousTime, currentTime))
+                    .then(({ data }) => {
+                        const arrHistoryCoin =
+                            getHistoryCoin.getHistoryThirtyMinutes(data.data);
+                        setHistoryCoin(arrHistoryCoin);
+                    })
+                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                break;
+            }
+            case PERIODS_OBJ.ONE_HOUR.value: {
+                let currentTime = Date.now();
+                let previousTime = currentTime - 4500000;
+                axios
+                    .get(
+                        getUrlHistory(idCoin, 'm15', previousTime, currentTime),
+                    )
+                    .then(({ data }) => {
+                        const arrHistoryCoin = getHistoryCoin.getHistoryOneHour(
+                            data.data,
+                        );
+                        setHistoryCoin(arrHistoryCoin);
+                    })
+                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                break;
+            }
+            case PERIODS_OBJ.THREE_HOURS.value: {
+                let currentTime = Date.now();
+                let previousTime = currentTime - 12600000;
+                axios
+                    .get(
+                        getUrlHistory(idCoin, 'm30', previousTime, currentTime),
+                    )
+                    .then(({ data }) => {
+                        const arrHistoryCoin =
+                            getHistoryCoin.getHistoryThreeHours(data.data);
+                        setHistoryCoin(arrHistoryCoin);
+                    })
+                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                break;
+            }
+            case PERIODS_OBJ.SIX_HOURS.value: {
+                let currentTime = Date.now();
+                let previousTime = currentTime - 25200000;
+                axios
+                    .get(getUrlHistory(idCoin, 'h1', previousTime, currentTime))
+                    .then(({ data }) => {
+                        const arrHistoryCoin =
+                            getHistoryCoin.getHistorySixHours(data.data);
+                        setHistoryCoin(arrHistoryCoin);
+                    })
+                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                break;
+            }
+            case PERIODS_OBJ.TWELVE_HOURS.value: {
+                let currentTime = Date.now();
+                let previousTime = currentTime - 50400000;
+                axios
+                    .get(getUrlHistory(idCoin, 'h2', previousTime, currentTime))
+                    .then(({ data }) => {
+                        const arrHistoryCoin =
+                            getHistoryCoin.getHistoryTwelveHours(data.data);
+                        setHistoryCoin(arrHistoryCoin);
+                    })
+                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                break;
+            }
+            case PERIODS_OBJ.ONE_DAY.value: {
+                let currentTime = Date.now();
+                let previousTime = currentTime - 111600000;
+                axios
+                    .get(getUrlHistory(idCoin, 'h6', previousTime, currentTime))
+                    .then(({ data }) => {
+                        const arrHistoryCoin = getHistoryCoin.getHistoryOneDay(
+                            data.data,
+                        );
+                        setHistoryCoin(arrHistoryCoin);
+                    })
+                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                break;
+            }
+            case PERIODS_OBJ.SEVEN_DAYS.value: {
+                let currentTime = Date.now();
+                let previousTime = currentTime - 691200000;
+                axios
+                    .get(getUrlHistory(idCoin, 'd1', previousTime, currentTime))
+                    .then(({ data }) => {
+                        const arrHistoryCoin =
+                            getHistoryCoin.getHistorySevenDays(data.data);
+                        setHistoryCoin(arrHistoryCoin);
+                    })
+                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                break;
+            }
+            case PERIODS_OBJ.ONE_MONTH.value: {
+                let currentTime = Date.now();
+                let previousTime = currentTime - 2764800000;
+                axios
+                    .get(getUrlHistory(idCoin, 'd1', previousTime, currentTime))
+                    .then(({ data }) => {
+                        const arrHistoryCoin =
+                            getHistoryCoin.getHistoryOneMonth(data.data);
+                        setHistoryCoin(arrHistoryCoin);
+                    })
+                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                break;
+            }
+            case PERIODS_OBJ.THREE_MONTHS.value: {
+                let currentTime = Date.now();
+                let previousTime = currentTime - 8121600000;
+                axios
+                    .get(getUrlHistory(idCoin, 'd1', previousTime, currentTime))
+                    .then(({ data }) => {
+                        const arrHistoryCoin =
+                            getHistoryCoin.getHistoryThreeMonths(data.data);
+                        setHistoryCoin(arrHistoryCoin);
+                    })
+                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                break;
+            }
+            case PERIODS_OBJ.SIX_MONTHS.value: {
+                let currentTime = Date.now();
+                let previousTime = currentTime - 16156800000;
+                axios
+                    .get(getUrlHistory(idCoin, 'd1', previousTime, currentTime))
+                    .then(({ data }) => {
+                        const arrHistoryCoin =
+                            getHistoryCoin.getHistorySixMonths(data.data);
+                        setHistoryCoin(arrHistoryCoin);
+                    })
+                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                break;
+            }
+            case PERIODS_OBJ.ONE_YEAR.value: {
+                let currentTime = Date.now();
+                let previousTime = currentTime - 32227200000;
+                axios
+                    .get(getUrlHistory(idCoin, 'd1', previousTime, currentTime))
+                    .then(({ data }) => {
+                        const arrHistoryCoin = getHistoryCoin.getHistoryOneYear(
+                            data.data,
+                        );
+                        setHistoryCoin(arrHistoryCoin);
+                    })
+                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                break;
             }
         }
     };
@@ -123,18 +246,12 @@ export const CoinInfo = ({ route, navigation }) => {
             {isLoading ? (
                 <Loader />
             ) : (
-                <CoinSafeAreaView>
-                    <ScrollView>
+                <ScrollView nestedScrollEnabled={true}>
+                    <CoinSafeAreaView>
                         <CoinScrollView>
-                            <Crypto
-                                title={coin.name}
-                                price={coin.priceUsd}
-                                symbol={coin.symbol}
-                                changePrecent={coin.changePercent24Hr}
-                                rank={coin.rank}
-                            />
+                            <Details coin={coin} />
                         </CoinScrollView>
-                        <HeaderText text="Chart" />
+                        <InfoTextCenter text="Chart" />
                         <DropDownPicker
                             open={open}
                             value={timePeriod}
@@ -143,138 +260,27 @@ export const CoinInfo = ({ route, navigation }) => {
                             setValue={setTimePeriod}
                             setItems={setItems}
                             theme="DARK"
-                            placeholder={TIME_PERIODS[0].label}
+                            placeholder={'Select time period'}
+                            dropDownDirection="AUTO"
+                            bottomOffset={100}
+                            selectedItemContainerStyle={{
+                                backgroundColor: 'grey',
+                            }}
+                            listMode="MODAL"
+                            modalTitle="Select time period"
+                            modalContentContainerStyle={{
+                                backgroundColor: '#333333',
+                            }}
+                            style={{
+                                backgroundColor: '#333333',
+                                borderRadius: 0,
+                                borderColor: '#555555',
+                            }}
                         />
-                        <View
-                            style={{
-                                marginLeft: 15,
-                                marginRight: 15,
-                                color: 'white',
-                            }}>
-                            <VictoryChart
-                                height={400}
-                                padding={{
-                                    top: 40,
-                                    bottom: 80,
-                                    left: 65,
-                                    right: 35,
-                                }}
-                                containerComponent={
-                                    <VictoryVoronoiContainer
-                                        labels={({ datum }) =>
-                                            `${datum.priceUsd.toFixed(4)}`
-                                        }
-                                    />
-                                }>
-                                <VictoryLine
-                                    style={{
-                                        data: { stroke: '#c43a31' },
-                                    }}
-                                    data={historyCoin}
-                                    y="priceUsd"
-                                    x="dateChange"
-                                    animate={{
-                                        duration: 1000,
-                                        onLoad: {
-                                            duration: 1000,
-                                        },
-                                    }}
-                                />
-                                <VictoryAxis
-                                    style={{
-                                        axis: { stroke: '#fff' },
-                                        grid: {
-                                            stroke: 'gray',
-                                        },
-                                        tickLabels: {
-                                            padding: 1,
-                                            angle: 90,
-                                            verticalAnchor: 'end',
-                                            textAnchor: 'start',
-                                            fill: '#aaa',
-                                        },
-                                    }}
-                                />
-                                <VictoryAxis
-                                    dependentAxis
-                                    style={{
-                                        axis: { stroke: '#fff' },
-                                        grid: {
-                                            stroke: 'gray',
-                                        },
-                                        tickLabels: {
-                                            fill: '#aaa',
-                                        },
-                                    }}
-                                />
-                            </VictoryChart>
-                        </View>
-                        <View
-                            style={{
-                                marginLeft: 15,
-                                marginRight: 15,
-                                color: 'white',
-                            }}>
-                            <VictoryChart
-                                height={400}
-                                padding={{
-                                    top: 40,
-                                    bottom: 80,
-                                    left: 65,
-                                    right: 35,
-                                }}
-                                containerComponent={
-                                    <VictoryVoronoiContainer
-                                        labels={({ datum }) =>
-                                            `${datum.priceUsd.toFixed(4)}`
-                                        }
-                                    />
-                                }>
-                                <VictoryLine
-                                    style={{
-                                        data: { stroke: '#c43a31' },
-                                    }}
-                                    data={historyCoin}
-                                    y="priceUsd"
-                                    x="dateChange"
-                                    animate={{
-                                        duration: 1000,
-                                        onLoad: {
-                                            duration: 1000,
-                                        },
-                                    }}
-                                />
-                                <VictoryAxis
-                                    style={{
-                                        axis: { stroke: '#fff' },
-                                        grid: {
-                                            stroke: 'gray',
-                                        },
-                                        tickLabels: {
-                                            padding: 1,
-                                            angle: 90,
-                                            verticalAnchor: 'end',
-                                            textAnchor: 'start',
-                                            fill: '#aaa',
-                                        },
-                                    }}
-                                />
-                                <VictoryAxis
-                                    dependentAxis
-                                    style={{
-                                        axis: { stroke: '#fff' },
-                                        grid: {
-                                            stroke: 'gray',
-                                        },
-                                        tickLabels: {
-                                            fill: '#aaa',
-                                        },
-                                    }}
-                                />
-                            </VictoryChart>
-                        </View>
-                    </ScrollView>
-                </CoinSafeAreaView>
+                        <ChartCoin historyCoin={historyCoin} />
+                        <TableMarkets markets={markets} />
+                    </CoinSafeAreaView>
+                </ScrollView>
             )}
         </View>
     );
