@@ -4,6 +4,7 @@ import axios from 'axios';
 import styled from 'styled-components';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Table, Row, Rows } from 'react-native-table-component';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { LogBox } from 'react-native';
 
@@ -20,6 +21,7 @@ import { getHistoryCoin } from '../api/getHistoryCoin';
 import { getUrlCoin, getUrlHistory, getUrlMarkets } from '../api/getUrlCoin';
 import { HEADER_MARKETS_TABLE } from '../constants/headerMarketsTable';
 import { fixedNumber, pointsInNumber } from '../api/transformNumber';
+import { currencyConverter } from '../api/currencyConverter';
 
 const CoinSafeAreaView = styled.SafeAreaView`
     padding: 0 15px;
@@ -27,6 +29,11 @@ const CoinSafeAreaView = styled.SafeAreaView`
 const CoinScrollView = styled.ScrollView``;
 
 export const CoinInfo = ({ route, navigation }) => {
+    const {
+        rateUsd,
+        currencySymbol,
+        symbol: symbolCur,
+    } = useSelector((reducer) => reducer.currency);
     const { idCoin = 'bitcoin', title = 'Bitcoin' } = route.params;
     navigation.setOptions({
         title,
@@ -57,7 +64,12 @@ export const CoinInfo = ({ route, navigation }) => {
                 const arrMarkets = data.data.map((e) => {
                     return [
                         e.exchangeId,
-                        '$' + pointsInNumber(e.priceUsd, 3),
+                        `${
+                            currencySymbol ? currencySymbol : symbolCur
+                        } ${pointsInNumber(
+                            currencyConverter(e.priceUsd, rateUsd),
+                            3,
+                        )}`,
                         pointsInNumber(e.volumePercent, 5) + '%',
                     ];
                 });
@@ -249,7 +261,12 @@ export const CoinInfo = ({ route, navigation }) => {
                 <ScrollView nestedScrollEnabled={true}>
                     <CoinSafeAreaView>
                         <CoinScrollView>
-                            <Details coin={coin} />
+                            <Details
+                                coin={coin}
+                                currencySymbol={currencySymbol}
+                                symbolCur={symbolCur}
+                                rateUsd={rateUsd}
+                            />
                         </CoinScrollView>
                         <InfoTextCenter text="Chart" />
                         <DropDownPicker

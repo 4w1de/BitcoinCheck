@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import styled from 'styled-components/native';
 
 import { fixedNumber, pointsInNumber } from '../api/transformNumber';
+import { currencyConverter } from '../api/currencyConverter';
 
 const DetailsView = styled.View``;
 const Symbol = styled.Text`
@@ -69,7 +70,7 @@ const ChangePercentDown = styled.Text`
     font-size: 14px;
 `;
 
-export const Details = ({ coin }) => {
+export const Details = ({ coin, currencySymbol, symbolCur, rateUsd }) => {
     return (
         <DetailsView>
             <Symbol>{coin.symbol}</Symbol>
@@ -78,8 +79,15 @@ export const Details = ({ coin }) => {
             <AdditionalInfoView>
                 <AdditionalInfoTitle>Price: </AdditionalInfoTitle>
                 <AdditionalInfoValueView>
-                    <Dollar>$</Dollar>
-                    <Price>{pointsInNumber(coin.priceUsd, 2)}</Price>
+                    <Dollar>
+                        {currencySymbol ? currencySymbol : symbolCur}
+                    </Dollar>
+                    <Price>
+                        {pointsInNumber(
+                            currencyConverter(coin.priceUsd, rateUsd),
+                            2,
+                        )}
+                    </Price>
                 </AdditionalInfoValueView>
             </AdditionalInfoView>
             <AdditionalInfoView>
@@ -97,7 +105,12 @@ export const Details = ({ coin }) => {
                 </AdditionalInfoTitle>
                 <AdditionalInfoValueView>
                     <Dollar>$</Dollar>
-                    <Price>{pointsInNumber(coin.marketCapUsd, 2)}</Price>
+                    <Price>
+                        {pointsInNumber(
+                            currencyConverter(coin.marketCapUsd, rateUsd),
+                            2,
+                        )}
+                    </Price>
                 </AdditionalInfoValueView>
             </AdditionalInfoView>
             <AdditionalInfoView>
@@ -107,11 +120,25 @@ export const Details = ({ coin }) => {
                 <AdditionalInfoValueView>
                     {coin.changePercent24Hr < 0 ? (
                         <ChangePercentDown>
-                            &#5167;{pointsInNumber(coin.changePercent24Hr, 5)}
+                            &#5167;
+                            {pointsInNumber(
+                                currencyConverter(
+                                    coin.changePercent24Hr,
+                                    rateUsd,
+                                ),
+                                5,
+                            )}
                         </ChangePercentDown>
                     ) : (
                         <ChangePercentUp>
-                            &#5169;{pointsInNumber(coin.changePercent24Hr, 5)}
+                            &#5169;
+                            {pointsInNumber(
+                                currencyConverter(
+                                    coin.changePercent24Hr,
+                                    rateUsd,
+                                ),
+                                5,
+                            )}
                         </ChangePercentUp>
                     )}
                 </AdditionalInfoValueView>
@@ -122,7 +149,12 @@ export const Details = ({ coin }) => {
                 </AdditionalInfoTitle>
                 <AdditionalInfoValueView>
                     <Dollar>$</Dollar>
-                    <Price>{pointsInNumber(coin.vwap24Hr, 2)}</Price>
+                    <Price>
+                        {pointsInNumber(
+                            currencyConverter(coin.vwap24Hr, rateUsd),
+                            2,
+                        )}
+                    </Price>
                 </AdditionalInfoValueView>
             </AdditionalInfoView>
         </DetailsView>

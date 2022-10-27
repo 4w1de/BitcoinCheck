@@ -2,10 +2,12 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import styled from 'styled-components/native';
 
+import { fixedNumber, pointsInNumber } from '../api/transformNumber';
+
 const CryptoVies = styled.View`
     flex: 1;
     flex-direction: row;
-    padding: 15px 10px;
+    padding: 15px 0px;
     margin: 0 15px;
     border-bottom-width: 1px;
     border-bottom-color: rgba(255, 255, 255, 0.5);
@@ -20,6 +22,8 @@ const Title = styled.Text`
     font-weight: bolder;
     margin: auto 0;
     color: white;
+    word-wrap: break-word;
+    width: 120px;
 `;
 const Price = styled.Text`
     color: white;
@@ -43,20 +47,33 @@ const ChangePercentDown = styled.Text`
     text-align: right;
 `;
 
-export const Crypto = ({ rank, title, price, symbol, changePrecent }) => {
+export const Crypto = ({
+    rank,
+    title,
+    price,
+    symbol,
+    changePrecent,
+    symbolCur,
+    currencySymbol,
+}) => {
     return (
         <CryptoVies>
             <Symbol>{symbol}</Symbol>
-            <Title>({title})</Title>
+            <Title>
+                ({title}) #{rank}
+            </Title>
             <CryptoDetails>
-                <Price>${parseFloat(price).toFixed(3)}</Price>
+                <Price>
+                    {currencySymbol ? currencySymbol : symbolCur}{' '}
+                    {pointsInNumber(price, 3)}
+                </Price>
                 {changePrecent < 0 ? (
                     <ChangePercentDown>
-                        &#5167;{parseFloat(changePrecent).toFixed(5)}
+                        &#5167;{pointsInNumber(changePrecent, 5)}
                     </ChangePercentDown>
                 ) : (
                     <ChangePercentUp>
-                        &#5169;{parseFloat(changePrecent).toFixed(5)}
+                        &#5169;{pointsInNumber(changePrecent, 5)}
                     </ChangePercentUp>
                 )}
             </CryptoDetails>

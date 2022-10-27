@@ -19,9 +19,20 @@ import { Refresh } from '../components/Refresh';
 import { Loader } from '../components/Loader';
 import { InfoTextCenter } from '../components/InfoTextCenter';
 
+import { store } from '../redux/store';
+import { useSelector, useDispatch } from 'react-redux';
+
 import { COINCAP } from '../constants/urls';
+import { DropdownHeader } from '../components/DropdownHeader';
+import { currencyConverter } from '../api/currencyConverter';
 
 export const Home = ({ navigation }) => {
+    const {
+        rateUsd,
+        currencySymbol,
+        symbol: symbolCur,
+    } = useSelector((reducer) => reducer.currency);
+
     const [coins, setCoins] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(true);
     const [textSearch, setTextSearch] = React.useState('');
@@ -48,7 +59,7 @@ export const Home = ({ navigation }) => {
             });
     };
 
-    React, useEffect(fetchCoins, [textSearch]);
+    React.useEffect(fetchCoins, [textSearch]);
 
     return (
         <View style={{ backgroundColor: '#333333', height: '100%' }}>
@@ -57,6 +68,7 @@ export const Home = ({ navigation }) => {
                 textSearch={textSearch}
                 setTextSearch={setTextSearch}
             />
+            <DropdownHeader />
             {isLoading ? (
                 <Loader />
             ) : (
@@ -82,10 +94,18 @@ export const Home = ({ navigation }) => {
                                     }>
                                     <Crypto
                                         title={item.name}
-                                        price={item.priceUsd}
+                                        price={currencyConverter(
+                                            item.priceUsd,
+                                            rateUsd,
+                                        )}
                                         symbol={item.symbol}
-                                        changePrecent={item.changePercent24Hr}
+                                        changePrecent={currencyConverter(
+                                            item.changePercent24Hr,
+                                            rateUsd,
+                                        )}
                                         rank={item.rank}
+                                        currencySymbol={currencySymbol}
+                                        symbolCur={symbolCur}
                                     />
                                 </TouchableOpacity>
                             )}
