@@ -80,12 +80,12 @@ export const Details = ({ coin, currencySymbol, symbolCur, rateUsd }) => {
                 <AdditionalInfoTitle>Price: </AdditionalInfoTitle>
                 <AdditionalInfoValueView>
                     <Dollar>
-                        {currencySymbol ? currencySymbol : symbolCur}
+                        {currencySymbol ? currencySymbol : symbolCur}{' '}
                     </Dollar>
                     <Price>
                         {pointsInNumber(
                             currencyConverter(coin.priceUsd, rateUsd),
-                            2,
+                            4,
                         )}
                     </Price>
                 </AdditionalInfoValueView>
@@ -104,7 +104,9 @@ export const Details = ({ coin, currencySymbol, symbolCur, rateUsd }) => {
                     Market Cap (supply * price):
                 </AdditionalInfoTitle>
                 <AdditionalInfoValueView>
-                    <Dollar>$</Dollar>
+                    <Dollar>
+                        {currencySymbol ? currencySymbol : symbolCur}{' '}
+                    </Dollar>
                     <Price>
                         {pointsInNumber(
                             currencyConverter(coin.marketCapUsd, rateUsd),
@@ -148,7 +150,9 @@ export const Details = ({ coin, currencySymbol, symbolCur, rateUsd }) => {
                     Volume Weighted Average Price in the last 24 hours:{' '}
                 </AdditionalInfoTitle>
                 <AdditionalInfoValueView>
-                    <Dollar>$</Dollar>
+                    <Dollar>
+                        {currencySymbol ? currencySymbol : symbolCur}{' '}
+                    </Dollar>
                     <Price>
                         {pointsInNumber(
                             currencyConverter(coin.vwap24Hr, rateUsd),

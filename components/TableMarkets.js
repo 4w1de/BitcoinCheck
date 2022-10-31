@@ -38,7 +38,7 @@ export const TableMarkets = ({ markets }) => {
                     <RowTable
                         key={index}
                         data={rowData}
-                        style={[index % 2 == 0 && { backgroundColor: '#555' }]}
+                        style={index % 2 == 0 && { backgroundColor: '#555' }}
                         textStyle={{
                             color: 'white',
                             textAlign: 'center',

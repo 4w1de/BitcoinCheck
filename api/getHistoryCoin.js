@@ -2,35 +2,36 @@ import moment from 'moment';
 
 import { DAYS_OF_THE_WEEK, MONTHS, MONDAY } from '../constants/date';
 import { TIME_PERIODS, PERIODS_OBJ } from '../constants/timePerionds';
+import { currencyConverter } from '../api/currencyConverter';
 
-const getHistoryTenMinutes = (data) => {
+const getHistoryTenMinutes = (data, rateUsd) => {
     return data.map((e) => {
         let dateChange = moment(e.time).format('hh:mm');
         return {
-            priceUsd: Number(e.priceUsd),
+            priceUsd: currencyConverter(e.priceUsd, rateUsd),
             dateChange,
         };
     });
 };
-const getHistoryThirtyMinutes = (data) => {
+const getHistoryThirtyMinutes = (data, rateUsd) => {
     return data.map((e) => {
         let dateChange = moment(e.time).format('hh:mm');
         return {
-            priceUsd: Number(e.priceUsd),
+            priceUsd: currencyConverter(e.priceUsd, rateUsd),
             dateChange,
         };
     });
 };
-const getHistoryOneHour = (data) => {
+const getHistoryOneHour = (data, rateUsd) => {
     return data.map((e) => {
         let dateChange = moment(e.time).format('hh:mm');
         return {
-            priceUsd: Number(e.priceUsd),
+            priceUsd: currencyConverter(e.priceUsd, rateUsd),
             dateChange,
         };
     });
 };
-const getHistoryThreeHours = (data) => {
+const getHistoryThreeHours = (data, rateUsd) => {
     return data.map((e) => {
         let curMonth = moment(e.time).format('M');
         let curDay = moment(e.time).format('DD');
@@ -39,12 +40,12 @@ const getHistoryThreeHours = (data) => {
         ).abb;
         let dateChange = moment(e.time).format('hh:mm');
         return {
-            priceUsd: Number(e.priceUsd),
+            priceUsd: currencyConverter(e.priceUsd, rateUsd),
             dateChange: titleCurMonth + '-' + curDay + '\n ' + dateChange,
         };
     });
 };
-const getHistorySixHours = (data) => {
+const getHistorySixHours = (data, rateUsd) => {
     return data.map((e) => {
         let curMonth = moment(e.time).format('M');
         let curDay = moment(e.time).format('DD');
@@ -53,12 +54,12 @@ const getHistorySixHours = (data) => {
         ).abb;
         let dateChange = moment(e.time).format('hh:mm');
         return {
-            priceUsd: Number(e.priceUsd),
+            priceUsd: currencyConverter(e.priceUsd, rateUsd),
             dateChange: titleCurMonth + '-' + curDay + '\n ' + dateChange,
         };
     });
 };
-const getHistoryTwelveHours = (data) => {
+const getHistoryTwelveHours = (data, rateUsd) => {
     return data.map((e) => {
         let curMonth = moment(e.time).format('M');
         let curDay = moment(e.time).format('DD');
@@ -67,13 +68,13 @@ const getHistoryTwelveHours = (data) => {
         ).abb;
         let dateChange = moment(e.time).format('hh:mm');
         return {
-            priceUsd: Number(e.priceUsd),
+            priceUsd: currencyConverter(e.priceUsd, rateUsd),
             dateChange: titleCurMonth + '-' + curDay + '\n ' + dateChange,
         };
     });
 };
 
-const getHistoryOneDay = (data) => {
+const getHistoryOneDay = (data, rateUsd) => {
     return data.map((e) => {
         let curMonth = moment(e.time).format('M');
         let curDay = moment(e.time).format('DD');
@@ -82,12 +83,12 @@ const getHistoryOneDay = (data) => {
         ).abb;
         let dateChange = moment(e.time).format('hh:mm');
         return {
-            priceUsd: Number(e.priceUsd),
+            priceUsd: currencyConverter(e.priceUsd, rateUsd),
             dateChange: titleCurMonth + '-' + curDay + '\n ' + dateChange,
         };
     });
 };
-const getHistorySevenDays = (data) => {
+const getHistorySevenDays = (data, rateUsd) => {
     return data.map((e) => {
         let curMonth = moment(e.time).format('M');
         let curDay = moment(e.time).format('DD');
@@ -96,12 +97,12 @@ const getHistorySevenDays = (data) => {
         ).abb;
         let dateChange = moment(e.time).format('hh:mm');
         return {
-            priceUsd: Number(e.priceUsd),
+            priceUsd: currencyConverter(e.priceUsd, rateUsd),
             dateChange: titleCurMonth + '-' + curDay + '\n ' + dateChange,
         };
     });
 };
-const getHistoryOneMonth = (data) => {
+const getHistoryOneMonth = (data, rateUsd) => {
     return data.reduce((res, e) => {
         let dayOfWeekTMP = new Date(moment(e.time)).getDay();
         let dayOfWeek = DAYS_OF_THE_WEEK.find(
@@ -116,14 +117,14 @@ const getHistoryOneMonth = (data) => {
             ).abb;
             let dateChange = moment(e.time).format('hh:mm');
             res.push({
-                priceUsd: Number(e.priceUsd),
+                priceUsd: currencyConverter(e.priceUsd, rateUsd),
                 dateChange: titleCurMonth + '-' + curDay + '\n ' + dateChange,
             });
         }
         return res;
     }, []);
 };
-const getHistoryThreeMonths = (data) => {
+const getHistoryThreeMonths = (data, rateUsd) => {
     return data.reduce((res, e) => {
         let curMonth = moment(e.time).format('M');
         let curDay = moment(e.time).format('DD');
@@ -133,7 +134,7 @@ const getHistoryThreeMonths = (data) => {
             ).abb;
             let dateChange = moment(e.time).format('hh:mm');
             res.push({
-                priceUsd: Number(e.priceUsd),
+                priceUsd: currencyConverter(e.priceUsd, rateUsd),
                 dateChange: titleCurMonth + '-' + curDay,
             });
         }
@@ -141,7 +142,7 @@ const getHistoryThreeMonths = (data) => {
         return res;
     }, []);
 };
-const getHistorySixMonths = (data) => {
+const getHistorySixMonths = (data, rateUsd) => {
     return data.reduce((res, e) => {
         let curMonth = moment(e.time).format('M');
         let curDay = moment(e.time).format('DD');
@@ -151,7 +152,7 @@ const getHistorySixMonths = (data) => {
             ).abb;
             let dateChange = moment(e.time).format('hh:mm');
             res.push({
-                priceUsd: Number(e.priceUsd),
+                priceUsd: currencyConverter(e.priceUsd, rateUsd),
                 dateChange: titleCurMonth + '-' + curDay,
             });
         }
@@ -159,7 +160,7 @@ const getHistorySixMonths = (data) => {
         return res;
     }, []);
 };
-const getHistoryOneYear = (data) => {
+const getHistoryOneYear = (data, rateUsd) => {
     return data.reduce((res, e) => {
         let curMonth = moment(e.time).format('M');
         let curDay = moment(e.time).format('DD');
@@ -169,7 +170,7 @@ const getHistoryOneYear = (data) => {
             ).abb;
             let dateChange = moment(e.time).format('hh:mm');
             res.push({
-                priceUsd: Number(e.priceUsd),
+                priceUsd: currencyConverter(e.priceUsd, rateUsd),
                 dateChange: titleCurMonth + '-' + curDay,
             });
         }

@@ -8,7 +8,7 @@ import {
     RefreshControl,
     TouchableOpacity,
 } from 'react-native';
-import React, { useEffect, memo } from 'react';
+import React, { useEffect } from 'react';
 import axios from 'axios';
 import * as NavigationBar from 'expo-navigation-bar';
 import styled from 'styled-components';
@@ -29,7 +29,7 @@ import { COINCAP } from '../constants/urls';
 import { DropdownHeader } from '../components/DropdownHeader';
 import { currencyConverter } from '../api/currencyConverter';
 
-export const Home = ({ navigation }) => {
+export const Favorites = ({ navigation }) => {
     const {
         rateUsd,
         currencySymbol,
@@ -40,22 +40,29 @@ export const Home = ({ navigation }) => {
     const [isLoading, setIsLoading] = React.useState(true);
     const [textSearch, setTextSearch] = React.useState('');
     const [sort, setSort] = React.useState(SORT_OBJ.POPULARITY.value);
+    let favorites = [];
+    const getFavorites = async () => {
+        let arr = '[]';
+        await AsyncStorage.getItem('favorites').then((e) => {
+            arr = e;
+        });
+        favorites = arr ? JSON.parse(arr) : [];
 
-    const fetchCoins = () => {
-        setIsLoading(true);
         axios
             .get(COINCAP)
             .then(({ data }) => {
                 let copyCoins = sorting(
-                    data.data.filter(
-                        (coin) =>
-                            coin.symbol
-                                .toLowerCase()
-                                .includes(textSearch.toLowerCase()) ||
-                            coin.name
-                                .toLowerCase()
-                                .includes(textSearch.toLowerCase()),
-                    ),
+                    data.data
+                        .filter((e) => favorites.includes(e.id))
+                        .filter(
+                            (coin) =>
+                                coin.symbol
+                                    .toLowerCase()
+                                    .includes(textSearch.toLowerCase()) ||
+                                coin.name
+                                    .toLowerCase()
+                                    .includes(textSearch.toLowerCase()),
+                        ),
                     sort,
                 );
                 setCoins(copyCoins);
@@ -66,6 +73,11 @@ export const Home = ({ navigation }) => {
             });
     };
 
+    const fetchCoins = () => {
+        setIsLoading(true);
+        getFavorites();
+    };
+
     React.useEffect(fetchCoins, [textSearch, sort]);
 
     return (
@@ -73,8 +85,8 @@ export const Home = ({ navigation }) => {
             <Refresh
                 fetchCoins={fetchCoins}
                 navigation={navigation}
-                pathForIcon="Favorites"
-                iconName="bookmark-outline"
+                pathForIcon="Home"
+                iconName="home-outline"
             />
             <SearchCrypto
                 textSearch={textSearch}
@@ -87,7 +99,7 @@ export const Home = ({ navigation }) => {
                 <View style={{ marginBottom: 200 }}>
                     {coins.length ? (
                         <FlatList
-                            windowSize={101}
+                            windowSize={102}
                             refreshControl={
                                 <RefreshControl
                                     refreshing={isLoading}
@@ -95,9 +107,7 @@ export const Home = ({ navigation }) => {
                                 />
                             }
                             data={coins}
-                            initialNumToRender={100}
-                            removeClippedSubviews
-                            keyExtractor={(item) => item.id}
+                            initialNumToRender={coins.length}
                             renderItem={({ item }) => (
                                 <TouchableOpacity
                                     onPress={() =>
@@ -123,6 +133,7 @@ export const Home = ({ navigation }) => {
                                     />
                                 </TouchableOpacity>
                             )}
+                            keyExtractor={(item) => item.id}
                         />
                     ) : (
                         <InfoTextCenter text="No data" />

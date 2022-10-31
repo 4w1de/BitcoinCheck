@@ -48,13 +48,13 @@ const ChangePercentDown = styled.Text`
 `;
 
 export const Crypto = ({
-    rank,
-    title,
-    price,
-    symbol,
-    changePrecent,
-    symbolCur,
-    currencySymbol,
+    rank = 1,
+    title = 1,
+    price = 1,
+    symbol = 1,
+    changePrecent = 1,
+    symbolCur = 1,
+    currencySymbol = 1,
 }) => {
     return (
         <CryptoVies>
@@ -65,7 +65,7 @@ export const Crypto = ({
             <CryptoDetails>
                 <Price>
                     {currencySymbol ? currencySymbol : symbolCur}{' '}
-                    {pointsInNumber(price, 3)}
+                    {pointsInNumber(price, 4)}
                 </Price>
                 {changePrecent < 0 ? (
                     <ChangePercentDown>

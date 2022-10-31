@@ -9,28 +9,38 @@ import { useSelector, useDispatch } from 'react-redux';
 import { SORT_MAP } from '../constants/sort';
 import { RATES } from '../constants/urls';
 import { getCurrency } from '../api/getCurrency';
+import { sortingCurrency } from '../api/sorting';
 
 const DropdownHeaderView = styled.View`
     padding: 10px 15px;
     flex-direction: row;
 `;
 
-export const DropdownHeader = () => {
+export const DropdownHeader = ({ sort, setSort }) => {
     const dispatch = useDispatch();
     const curr = useSelector((store) => store);
+    const { value } = useSelector((reducer) => reducer.currency);
 
     const [itemsSort, setItemsSort] = React.useState(SORT_MAP);
     const [openSort, setOpenSort] = React.useState(false);
-    const [sort, setSort] = React.useState(null);
     const [itemsCurrency, setItemsCurrency] = React.useState([]);
     const [openCurrency, setOpenCurrency] = React.useState(false);
-    const [currency, setCurrency] = React.useState('united-states-dollar');
+    const [currency, setCurrency] = React.useState(
+        value ? value : 'united-states-dollar',
+    );
 
     const fetchCurrency = () => {
         axios.get(RATES).then(({ data }) => {
-            let currencyArr = data.data.map((e) => {
-                return { label: `${e.symbol} (${e.id})`, value: e.id };
-            });
+            let currencyArr = sortingCurrency(
+                data.data.map((e) => {
+                    return {
+                        label: `${e.symbol} (${e.id}, ${
+                            e.currencySymbol ? e.currencySymbol : e.symbol
+                        })`,
+                        value: e.id,
+                    };
+                }),
+            );
             setItemsCurrency(currencyArr);
         });
     };

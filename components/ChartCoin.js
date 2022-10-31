@@ -7,7 +7,7 @@ import {
     VictoryVoronoiContainer,
 } from 'victory-native';
 
-export const ChartCoin = ({ historyCoin }) => {
+export const ChartCoin = ({ historyCoin, currencySymbol, symbolCur }) => {
     return (
         <View
             style={{
@@ -23,7 +23,11 @@ export const ChartCoin = ({ historyCoin }) => {
                 }}
                 containerComponent={
                     <VictoryVoronoiContainer
-                        labels={({ datum }) => `$${datum.priceUsd.toFixed(4)}`}
+                        labels={({ datum }) =>
+                            `${
+                                currencySymbol ? currencySymbol : symbolCur
+                            } ${datum.priceUsd.toFixed(4)}`
+                        }
                     />
                 }>
                 <VictoryLine
@@ -48,9 +52,9 @@ export const ChartCoin = ({ historyCoin }) => {
                         },
                         tickLabels: {
                             padding: 1,
-                            angle: 90,
+                            angle: -45,
                             verticalAnchor: 'end',
-                            textAnchor: 'start',
+                            textAnchor: 'end',
                             fill: '#aaa',
                         },
                     }}
@@ -64,6 +68,10 @@ export const ChartCoin = ({ historyCoin }) => {
                         },
                         tickLabels: {
                             fill: '#aaa',
+                            padding: 1,
+                            angle: -45,
+                            verticalAnchor: 'end',
+                            textAnchor: 'end',
                         },
                     }}
                 />

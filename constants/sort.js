@@ -31,3 +31,11 @@ export const SORT_MAP = [
     PRICE_HIGH_TO_LOW,
     POPULARITY,
 ];
+export const SORT_OBJ = {
+    RECOMMENDED,
+    TITLE_LOW_TO_HIGH,
+    TITLE_HIGH_TO_LOW,
+    PRICE_LOW_TO_HIGH,
+    PRICE_HIGH_TO_LOW,
+    POPULARITY,
+};

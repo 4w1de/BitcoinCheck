@@ -8,20 +8,19 @@ const RefreshView = styled.View`
     flex-direction: row;
 `;
 
-export const Refresh = ({
+export const RefreshAddToFavorites = ({
     fetchCoins,
-    navigation,
-    iconName = 'bookmark-outline',
-    pathForIcon = 'Home',
+    addToFavorites,
+    isAddedToFavorites,
 }) => {
     return (
         <RefreshView>
             <TouchableOpacity>
                 <Icon
                     size={24}
-                    name={iconName}
+                    name={!isAddedToFavorites ? 'bookmark-outline' : 'bookmark'}
                     color="white"
-                    onPress={() => navigation.navigate(pathForIcon)}
+                    onPress={() => addToFavorites()}
                 />
             </TouchableOpacity>
             <TouchableOpacity style={{ marginLeft: 'auto' }}>

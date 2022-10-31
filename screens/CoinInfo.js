@@ -5,10 +5,11 @@ import styled from 'styled-components';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Table, Row, Rows } from 'react-native-table-component';
 import { useSelector, useDispatch } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { LogBox } from 'react-native';
 
-import { Refresh } from '../components/Refresh';
+import { RefreshAddToFavorites } from '../components/RefreshAddToFavorites';
 import { Loader } from '../components/Loader';
 import { HeaderText } from '../components/HeaderText';
 import { InfoTextCenter } from '../components/InfoTextCenter';
@@ -48,8 +49,20 @@ export const CoinInfo = ({ route, navigation }) => {
     const [timePeriod, setTimePeriod] = React.useState(null);
     const [items, setItems] = React.useState(TIME_PERIODS);
 
+    const [isAddedToFavorites, setIsAddedToFavorites] = React.useState(false);
+    const checkFavorites = async () => {
+        const arr = (await AsyncStorage.getItem('favorites'))
+            ? JSON.parse(await AsyncStorage.getItem('favorites'))
+            : [];
+        if (arr.find((e) => e === coin.id)) {
+            setIsAddedToFavorites(true);
+        }
+    };
+    checkFavorites();
+
     const fetchCoin = () => {
         LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+
         setTimePeriod(PERIODS_OBJ.TEN_MINUTES.value);
         setIsLoading(true);
         axios
@@ -90,7 +103,10 @@ export const CoinInfo = ({ route, navigation }) => {
                     .get(getUrlHistory(idCoin, 'm1', previousTime, currentTime))
                     .then(({ data }) => {
                         const arrHistoryCoin =
-                            getHistoryCoin.getHistoryTenMinutes(data.data);
+                            getHistoryCoin.getHistoryTenMinutes(
+                                data.data,
+                                rateUsd,
+                            );
                         setHistoryCoin(arrHistoryCoin);
                     })
                     .catch(() => Alert.alert('Error', 'Failed to load!'));
@@ -103,7 +119,10 @@ export const CoinInfo = ({ route, navigation }) => {
                     .get(getUrlHistory(idCoin, 'm5', previousTime, currentTime))
                     .then(({ data }) => {
                         const arrHistoryCoin =
-                            getHistoryCoin.getHistoryThirtyMinutes(data.data);
+                            getHistoryCoin.getHistoryThirtyMinutes(
+                                data.data,
+                                rateUsd,
+                            );
                         setHistoryCoin(arrHistoryCoin);
                     })
                     .catch(() => Alert.alert('Error', 'Failed to load!'));
@@ -119,6 +138,7 @@ export const CoinInfo = ({ route, navigation }) => {
                     .then(({ data }) => {
                         const arrHistoryCoin = getHistoryCoin.getHistoryOneHour(
                             data.data,
+                            rateUsd,
                         );
                         setHistoryCoin(arrHistoryCoin);
                     })
@@ -134,7 +154,10 @@ export const CoinInfo = ({ route, navigation }) => {
                     )
                     .then(({ data }) => {
                         const arrHistoryCoin =
-                            getHistoryCoin.getHistoryThreeHours(data.data);
+                            getHistoryCoin.getHistoryThreeHours(
+                                data.data,
+                                rateUsd,
+                            );
                         setHistoryCoin(arrHistoryCoin);
                     })
                     .catch(() => Alert.alert('Error', 'Failed to load!'));
@@ -147,7 +170,10 @@ export const CoinInfo = ({ route, navigation }) => {
                     .get(getUrlHistory(idCoin, 'h1', previousTime, currentTime))
                     .then(({ data }) => {
                         const arrHistoryCoin =
-                            getHistoryCoin.getHistorySixHours(data.data);
+                            getHistoryCoin.getHistorySixHours(
+                                data.data,
+                                rateUsd,
+                            );
                         setHistoryCoin(arrHistoryCoin);
                     })
                     .catch(() => Alert.alert('Error', 'Failed to load!'));
@@ -160,7 +186,10 @@ export const CoinInfo = ({ route, navigation }) => {
                     .get(getUrlHistory(idCoin, 'h2', previousTime, currentTime))
                     .then(({ data }) => {
                         const arrHistoryCoin =
-                            getHistoryCoin.getHistoryTwelveHours(data.data);
+                            getHistoryCoin.getHistoryTwelveHours(
+                                data.data,
+                                rateUsd,
+                            );
                         setHistoryCoin(arrHistoryCoin);
                     })
                     .catch(() => Alert.alert('Error', 'Failed to load!'));
@@ -174,6 +203,7 @@ export const CoinInfo = ({ route, navigation }) => {
                     .then(({ data }) => {
                         const arrHistoryCoin = getHistoryCoin.getHistoryOneDay(
                             data.data,
+                            rateUsd,
                         );
                         setHistoryCoin(arrHistoryCoin);
                     })
@@ -187,7 +217,10 @@ export const CoinInfo = ({ route, navigation }) => {
                     .get(getUrlHistory(idCoin, 'd1', previousTime, currentTime))
                     .then(({ data }) => {
                         const arrHistoryCoin =
-                            getHistoryCoin.getHistorySevenDays(data.data);
+                            getHistoryCoin.getHistorySevenDays(
+                                data.data,
+                                rateUsd,
+                            );
                         setHistoryCoin(arrHistoryCoin);
                     })
                     .catch(() => Alert.alert('Error', 'Failed to load!'));
@@ -200,7 +233,10 @@ export const CoinInfo = ({ route, navigation }) => {
                     .get(getUrlHistory(idCoin, 'd1', previousTime, currentTime))
                     .then(({ data }) => {
                         const arrHistoryCoin =
-                            getHistoryCoin.getHistoryOneMonth(data.data);
+                            getHistoryCoin.getHistoryOneMonth(
+                                data.data,
+                                rateUsd,
+                            );
                         setHistoryCoin(arrHistoryCoin);
                     })
                     .catch(() => Alert.alert('Error', 'Failed to load!'));
@@ -213,7 +249,10 @@ export const CoinInfo = ({ route, navigation }) => {
                     .get(getUrlHistory(idCoin, 'd1', previousTime, currentTime))
                     .then(({ data }) => {
                         const arrHistoryCoin =
-                            getHistoryCoin.getHistoryThreeMonths(data.data);
+                            getHistoryCoin.getHistoryThreeMonths(
+                                data.data,
+                                rateUsd,
+                            );
                         setHistoryCoin(arrHistoryCoin);
                     })
                     .catch(() => Alert.alert('Error', 'Failed to load!'));
@@ -226,7 +265,10 @@ export const CoinInfo = ({ route, navigation }) => {
                     .get(getUrlHistory(idCoin, 'd1', previousTime, currentTime))
                     .then(({ data }) => {
                         const arrHistoryCoin =
-                            getHistoryCoin.getHistorySixMonths(data.data);
+                            getHistoryCoin.getHistorySixMonths(
+                                data.data,
+                                rateUsd,
+                            );
                         setHistoryCoin(arrHistoryCoin);
                     })
                     .catch(() => Alert.alert('Error', 'Failed to load!'));
@@ -240,6 +282,7 @@ export const CoinInfo = ({ route, navigation }) => {
                     .then(({ data }) => {
                         const arrHistoryCoin = getHistoryCoin.getHistoryOneYear(
                             data.data,
+                            rateUsd,
                         );
                         setHistoryCoin(arrHistoryCoin);
                     })
@@ -249,12 +292,33 @@ export const CoinInfo = ({ route, navigation }) => {
         }
     };
 
+    const addToFavorites = async () => {
+        const arr = await AsyncStorage.getItem('favorites');
+        const favorites = arr ? JSON.parse(arr) : [];
+        if (favorites.find((e) => e === coin.id)) {
+            let newFavorites = favorites.filter((e) => e !== coin.id);
+            await AsyncStorage.setItem(
+                'favorites',
+                JSON.stringify(newFavorites),
+            );
+            setIsAddedToFavorites(false);
+        } else {
+            favorites.push(coin.id);
+            setIsAddedToFavorites(true);
+            await AsyncStorage.setItem('favorites', JSON.stringify(favorites));
+        }
+    };
+
     React.useEffect(fetchCoin, []);
     React.useEffect(changeTimePeriod, [timePeriod]);
 
     return (
         <View style={{ backgroundColor: '#333333', height: '100%' }}>
-            <Refresh fetchCoins={fetchCoin} />
+            <RefreshAddToFavorites
+                fetchCoins={fetchCoin}
+                addToFavorites={addToFavorites}
+                isAddedToFavorites={isAddedToFavorites}
+            />
             {isLoading ? (
                 <Loader />
             ) : (
@@ -294,7 +358,12 @@ export const CoinInfo = ({ route, navigation }) => {
                                 borderColor: '#555555',
                             }}
                         />
-                        <ChartCoin historyCoin={historyCoin} />
+                        <ChartCoin
+                            historyCoin={historyCoin}
+                            currencySymbol={currencySymbol}
+                            symbolCur={symbolCur}
+                            rateUsd={rateUsd}
+                        />
                         <TableMarkets markets={markets} />
                     </CoinSafeAreaView>
                 </ScrollView>
