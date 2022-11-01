@@ -7,11 +7,13 @@ import {
     VictoryVoronoiContainer,
 } from 'victory-native';
 
+import { CUSTOM_COLORS } from '../constants/colors';
+
 export const ChartCoin = ({ historyCoin, currencySymbol, symbolCur }) => {
     return (
         <View
             style={{
-                color: 'white',
+                color: CUSTOM_COLORS.MAIN_COLOR_TEXT,
             }}>
             <VictoryChart
                 height={400}

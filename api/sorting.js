@@ -1,5 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { SORT_MAP, SORT_OBJ } from '../constants/sort';
+import { SORT_OBJ } from '../constants/sort';
 
 export const sorting = (coins, sortValue) => {
     switch (sortValue) {

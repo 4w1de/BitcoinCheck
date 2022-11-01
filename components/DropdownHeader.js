@@ -1,15 +1,17 @@
-import { Text, TextInput, View, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { Text, View, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import React from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { SORT_MAP } from '../constants/sort';
-import { RATES } from '../constants/urls';
 import { getCurrency } from '../api/getCurrency';
 import { sortingCurrency } from '../api/sorting';
+
+import { SORT_MAP } from '../constants/sort';
+import { RATES } from '../constants/urls';
+import { CUSTOM_COLORS } from '../constants/colors';
+import { SORTING_DROPDOWN, CURRENCY_DROPDOWN } from '../constants/dropdownInfo';
 
 const DropdownHeaderView = styled.View`
     padding: 10px 15px;
@@ -25,11 +27,10 @@ export const DropdownHeader = ({ sort, setSort }) => {
     const [openSort, setOpenSort] = React.useState(false);
     const [itemsCurrency, setItemsCurrency] = React.useState([]);
     const [openCurrency, setOpenCurrency] = React.useState(false);
-    const [currency, setCurrency] = React.useState(
-        value ? value : 'united-states-dollar',
-    );
+    const [currency, setCurrency] = React.useState('united-states-dollar');
 
     const fetchCurrency = () => {
+        setCurrency(value);
         axios.get(RATES).then(({ data }) => {
             let currencyArr = sortingCurrency(
                 data.data.map((e) => {
@@ -45,7 +46,7 @@ export const DropdownHeader = ({ sort, setSort }) => {
         });
     };
 
-    React.useEffect(fetchCurrency, []);
+    React.useEffect(fetchCurrency, [value]);
 
     return (
         <DropdownHeaderView>
@@ -57,22 +58,22 @@ export const DropdownHeader = ({ sort, setSort }) => {
                     setOpen={setOpenSort}
                     setValue={setSort}
                     setItems={setItemsSort}
-                    theme="DARK"
-                    placeholder={'Select sort'}
+                    theme={CUSTOM_COLORS.NAME_THEME}
+                    placeholder={SORTING_DROPDOWN}
                     dropDownDirection="AUTO"
                     bottomOffset={100}
                     selectedItemContainerStyle={{
-                        backgroundColor: 'grey',
+                        backgroundColor: CUSTOM_COLORS.SELECTED,
                     }}
                     listMode="MODAL"
-                    modalTitle="Select sorting"
+                    modalTitle={SORTING_DROPDOWN}
                     modalContentContainerStyle={{
-                        backgroundColor: '#333333',
+                        backgroundColor: CUSTOM_COLORS.BACKGROUND_COLOR,
                     }}
                     style={{
-                        backgroundColor: '#333333',
+                        backgroundColor: CUSTOM_COLORS.BACKGROUND_COLOR,
                         borderRadius: 0,
-                        borderColor: '#555555',
+                        borderColor: CUSTOM_COLORS.BORDER_DROPDOWN,
                     }}
                 />
             </View>
@@ -87,25 +88,25 @@ export const DropdownHeader = ({ sort, setSort }) => {
                     onSelectItem={(item) => {
                         dispatch(getCurrency(item.value));
                     }}
-                    theme="DARK"
-                    placeholder={'Select currency'}
+                    theme={CUSTOM_COLORS.NAME_THEME}
+                    placeholder={CURRENCY_DROPDOWN}
                     dropDownDirection="AUTO"
                     bottomOffset={100}
                     searchable={true}
                     searchPlaceholder="Search..."
                     selectedItemContainerStyle={{
-                        backgroundColor: 'grey',
+                        backgroundColor: CUSTOM_COLORS.SELECTED,
                     }}
                     itemKey="value"
                     listMode="MODAL"
-                    modalTitle="Select currency"
+                    modalTitle={CURRENCY_DROPDOWN}
                     modalContentContainerStyle={{
-                        backgroundColor: '#333333',
+                        backgroundColor: CUSTOM_COLORS.BACKGROUND_COLOR,
                     }}
                     style={{
-                        backgroundColor: '#333333',
+                        backgroundColor: CUSTOM_COLORS.BACKGROUND_COLOR,
                         borderRadius: 0,
-                        borderColor: '#555555',
+                        borderColor: CUSTOM_COLORS.BORDER_DROPDOWN,
                     }}
                 />
             </View>

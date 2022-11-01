@@ -1,7 +1,6 @@
 import moment from 'moment';
 
 import { DAYS_OF_THE_WEEK, MONTHS, MONDAY } from '../constants/date';
-import { TIME_PERIODS, PERIODS_OBJ } from '../constants/timePerionds';
 import { currencyConverter } from '../api/currencyConverter';
 
 const getHistoryTenMinutes = (data, rateUsd) => {
@@ -132,7 +131,6 @@ const getHistoryThreeMonths = (data, rateUsd) => {
             let titleCurMonth = MONTHS.find(
                 (month) => month.id == curMonth - 1,
             ).abb;
-            let dateChange = moment(e.time).format('hh:mm');
             res.push({
                 priceUsd: currencyConverter(e.priceUsd, rateUsd),
                 dateChange: titleCurMonth + '-' + curDay,
@@ -150,7 +148,6 @@ const getHistorySixMonths = (data, rateUsd) => {
             let titleCurMonth = MONTHS.find(
                 (month) => month.id == curMonth - 1,
             ).abb;
-            let dateChange = moment(e.time).format('hh:mm');
             res.push({
                 priceUsd: currencyConverter(e.priceUsd, rateUsd),
                 dateChange: titleCurMonth + '-' + curDay,
@@ -168,7 +165,6 @@ const getHistoryOneYear = (data, rateUsd) => {
             let titleCurMonth = MONTHS.find(
                 (month) => month.id == curMonth - 1,
             ).abb;
-            let dateChange = moment(e.time).format('hh:mm');
             res.push({
                 priceUsd: currencyConverter(e.priceUsd, rateUsd),
                 dateChange: titleCurMonth + '-' + curDay,

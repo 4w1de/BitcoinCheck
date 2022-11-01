@@ -1,33 +1,31 @@
-import { StatusBar } from 'expo-status-bar';
 import {
-    Text,
     View,
     Alert,
     FlatList,
-    ActivityIndicator,
     RefreshControl,
     TouchableOpacity,
 } from 'react-native';
-import React, { useEffect, memo } from 'react';
+import React from 'react';
 import axios from 'axios';
-import * as NavigationBar from 'expo-navigation-bar';
-import styled from 'styled-components';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSelector } from 'react-redux';
 
 import { Crypto } from '../components/Crypto';
 import { SearchCrypto } from '../components/SearchCrypto';
 import { Refresh } from '../components/Refresh';
 import { Loader } from '../components/Loader';
 import { InfoTextCenter } from '../components/InfoTextCenter';
-import { SORT_MAP, SORT_OBJ } from '../constants/sort';
-import { sorting } from '../api/sorting';
+import { DropdownHeader } from '../components/DropdownHeader';
 
-import { store } from '../redux/store';
-import { useSelector, useDispatch } from 'react-redux';
+import { sorting } from '../api/sorting';
+import { currencyConverter } from '../api/currencyConverter';
 
 import { COINCAP } from '../constants/urls';
-import { DropdownHeader } from '../components/DropdownHeader';
-import { currencyConverter } from '../api/currencyConverter';
+import { SORT_OBJ } from '../constants/sort';
+import { FAVORITES_PATH_ICON } from '../constants/pathAndIcon';
+import { NO_DATA } from '../constants/helpText';
+import { ERROR_AXIOS } from '../constants/error';
+import { BACKGROUND_COLOR } from '../constants/colors';
+import { SCREENS_TITLE } from '../constants/screensTitle';
 
 export const Home = ({ navigation }) => {
     const {
@@ -60,7 +58,9 @@ export const Home = ({ navigation }) => {
                 );
                 setCoins(copyCoins);
             })
-            .catch(() => Alert.alert('Error', 'Failed to load!'))
+            .catch(() =>
+                Alert.alert(ERROR_AXIOS.title, ERROR_AXIOS.description),
+            )
             .finally(() => {
                 setIsLoading(false);
             });
@@ -69,12 +69,12 @@ export const Home = ({ navigation }) => {
     React.useEffect(fetchCoins, [textSearch, sort]);
 
     return (
-        <View style={{ backgroundColor: '#333333', height: '100%' }}>
+        <View style={{ backgroundColor: BACKGROUND_COLOR, height: '100%' }}>
             <Refresh
                 fetchCoins={fetchCoins}
                 navigation={navigation}
-                pathForIcon="Favorites"
-                iconName="bookmark-outline"
+                pathForIcon={FAVORITES_PATH_ICON.pathForIcon}
+                iconName={FAVORITES_PATH_ICON.iconName}
             />
             <SearchCrypto
                 textSearch={textSearch}
@@ -101,10 +101,13 @@ export const Home = ({ navigation }) => {
                             renderItem={({ item }) => (
                                 <TouchableOpacity
                                     onPress={() =>
-                                        navigation.navigate('CoinInfo', {
-                                            idCoin: item.id,
-                                            title: item.name,
-                                        })
+                                        navigation.navigate(
+                                            SCREENS_TITLE.COININFO_SCREEN,
+                                            {
+                                                idCoin: item.id,
+                                                title: item.name,
+                                            },
+                                        )
                                     }>
                                     <Crypto
                                         title={item.name}
@@ -125,7 +128,7 @@ export const Home = ({ navigation }) => {
                             )}
                         />
                     ) : (
-                        <InfoTextCenter text="No data" />
+                        <InfoTextCenter text={NO_DATA} />
                     )}
                 </View>
             )}

@@ -2,7 +2,9 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import styled from 'styled-components/native';
 
-import { fixedNumber, pointsInNumber } from '../api/transformNumber';
+import { pointsInNumber } from '../api/transformNumber';
+
+import { CUSTOM_COLORS } from '../constants/colors';
 
 const CryptoVies = styled.View`
     flex: 1;
@@ -10,7 +12,7 @@ const CryptoVies = styled.View`
     padding: 15px 0px;
     margin: 0 15px;
     border-bottom-width: 1px;
-    border-bottom-color: rgba(255, 255, 255, 0.5);
+    border-bottom-color: ${CUSTOM_COLORS.LINE_BETWEEN};
     border-bottom-style: solid;
 `;
 const CryptoDetails = styled.View`
@@ -21,30 +23,35 @@ const Title = styled.Text`
     font-size: 14px;
     font-weight: bolder;
     margin: auto 0;
-    color: white;
+    color: ${CUSTOM_COLORS.MAIN_COLOR_TEXT};
     word-wrap: break-word;
     width: 120px;
 `;
 const Price = styled.Text`
-    color: white;
+    color: ${CUSTOM_COLORS.MAIN_COLOR_TEXT};
     font-size: 14px;
     text-align: right;
 `;
 const Symbol = styled.Text`
     font-size: 24px;
     font-weight: bolder;
-    color: #ff1144;
+    color: ${CUSTOM_COLORS.SYMBOL_COLOR};
     width: 100px;
 `;
 const ChangePercentUp = styled.Text`
-    color: #00ff00;
+    color: ${CUSTOM_COLORS.CHANGE_PRICE_UP};
     font-size: 12px;
     text-align: right;
 `;
 const ChangePercentDown = styled.Text`
-    color: #ff0000;
+    color: ${CUSTOM_COLORS.CHANGE_PRICE_DOWN};
     font-size: 12px;
     text-align: right;
+`;
+const Dollar = styled.Text`
+    font-size: 14px;
+    color: ${CUSTOM_COLORS.DOLLAR_COLOR};
+    font-weight: bolder;
 `;
 
 export const Crypto = ({
@@ -64,7 +71,9 @@ export const Crypto = ({
             </Title>
             <CryptoDetails>
                 <Price>
-                    {currencySymbol ? currencySymbol : symbolCur}{' '}
+                    <Dollar>
+                        {currencySymbol ? currencySymbol : symbolCur}{' '}
+                    </Dollar>
                     {pointsInNumber(price, 4)}
                 </Price>
                 {changePrecent < 0 ? (

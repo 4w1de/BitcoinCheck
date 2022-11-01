@@ -2,14 +2,17 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import styled from 'styled-components/native';
 
-import { fixedNumber, pointsInNumber } from '../api/transformNumber';
+import { pointsInNumber } from '../api/transformNumber';
 import { currencyConverter } from '../api/currencyConverter';
+
+import { DETAILS_TITLES } from '../constants/details';
+import { CUSTOM_COLORS } from '../constants/colors';
 
 const DetailsView = styled.View``;
 const Symbol = styled.Text`
     font-size: 48px;
     font-weight: 700;
-    color: green;
+    color: ${CUSTOM_COLORS.SYMBOL_COLOR};
     text-align: center;
     margin: -14px 0;
     text-shadow: 2px 2px 1px #000;
@@ -17,7 +20,7 @@ const Symbol = styled.Text`
 const CoinName = styled.Text`
     font-size: 24px;
     font-weight: bolder;
-    color: white;
+    color: ${CUSTOM_COLORS.MAIN_COLOR_TEXT};
     text-align: center;
 `;
 const Rank = styled.Text`
@@ -32,7 +35,7 @@ const AdditionalInfoView = styled.View`
 `;
 const AdditionalInfoTitle = styled.Text`
     font-size: 14px;
-    color: white;
+    color: ${CUSTOM_COLORS.MAIN_COLOR_TEXT};
     flex-wrap: wrap;
     max-width: 65%;
 `;
@@ -45,28 +48,28 @@ const AdditionalInfoValueView = styled.View`
 `;
 const Supply = styled.Text`
     font-size: 14px;
-    color: white;
+    color: ${CUSTOM_COLORS.MAIN_COLOR_TEXT};
     font-weight: 600;
 `;
 const MaxSupply = styled.Text`
     font-size: 14px;
-    color: green;
+    color: ${CUSTOM_COLORS.MAX_SUPPLY_COLOR};
 `;
 const Dollar = styled.Text`
     font-size: 14px;
-    color: green;
+    color: ${CUSTOM_COLORS.DOLLAR_COLOR};
     font-weight: bolder;
 `;
 const Price = styled.Text`
     font-size: 14px;
-    color: white;
+    color: ${CUSTOM_COLORS.MAIN_COLOR_TEXT};
 `;
 const ChangePercentUp = styled.Text`
-    color: #00ff00;
+    color: ${CUSTOM_COLORS.CHANGE_PRICE_UP};
     font-size: 14px;
 `;
 const ChangePercentDown = styled.Text`
-    color: #ff0000;
+    color: ${CUSTOM_COLORS.CHANGE_PRICE_DOWN};
     font-size: 14px;
 `;
 
@@ -75,9 +78,14 @@ export const Details = ({ coin, currencySymbol, symbolCur, rateUsd }) => {
         <DetailsView>
             <Symbol>{coin.symbol}</Symbol>
             <CoinName>({coin.name})</CoinName>
-            <Rank>Rank #{coin.rank}</Rank>
+            <Rank>
+                {DETAILS_TITLES.RANK}
+                {coin.rank}
+            </Rank>
             <AdditionalInfoView>
-                <AdditionalInfoTitle>Price: </AdditionalInfoTitle>
+                <AdditionalInfoTitle>
+                    {DETAILS_TITLES.PRICE}
+                </AdditionalInfoTitle>
                 <AdditionalInfoValueView>
                     <Dollar>
                         {currencySymbol ? currencySymbol : symbolCur}{' '}
@@ -92,7 +100,7 @@ export const Details = ({ coin, currencySymbol, symbolCur, rateUsd }) => {
             </AdditionalInfoView>
             <AdditionalInfoView>
                 <AdditionalInfoTitle>
-                    Available supply for trading:{' '}
+                    {DETAILS_TITLES.SUPPLY}
                 </AdditionalInfoTitle>
                 <AdditionalInfoValueView>
                     <Supply>{pointsInNumber(coin.supply, 0)}/</Supply>
@@ -101,7 +109,7 @@ export const Details = ({ coin, currencySymbol, symbolCur, rateUsd }) => {
             </AdditionalInfoView>
             <AdditionalInfoView>
                 <AdditionalInfoTitle>
-                    Market Cap (supply * price):
+                    {DETAILS_TITLES.MARKET_CAP}
                 </AdditionalInfoTitle>
                 <AdditionalInfoValueView>
                     <Dollar>
@@ -117,7 +125,7 @@ export const Details = ({ coin, currencySymbol, symbolCur, rateUsd }) => {
             </AdditionalInfoView>
             <AdditionalInfoView>
                 <AdditionalInfoTitle>
-                    Change percent in the last 24 hours:
+                    {DETAILS_TITLES.CHANGE_PERCENT}
                 </AdditionalInfoTitle>
                 <AdditionalInfoValueView>
                     {coin.changePercent24Hr < 0 ? (
@@ -146,9 +154,7 @@ export const Details = ({ coin, currencySymbol, symbolCur, rateUsd }) => {
                 </AdditionalInfoValueView>
             </AdditionalInfoView>
             <AdditionalInfoView>
-                <AdditionalInfoTitle>
-                    Volume Weighted Average Price in the last 24 hours:{' '}
-                </AdditionalInfoTitle>
+                <AdditionalInfoTitle>{DETAILS_TITLES.VWAP}</AdditionalInfoTitle>
                 <AdditionalInfoValueView>
                     <Dollar>
                         {currencySymbol ? currencySymbol : symbolCur}{' '}

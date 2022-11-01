@@ -1,7 +1,10 @@
-import { Text, TextInput, View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styled from 'styled-components/native';
 import React from 'react';
+
+import { FAVORITES_PATH_ICON } from '../constants/pathAndIcon';
+import { MAIN_COLOR_TEXT } from '../constants/colors';
 
 const RefreshView = styled.View`
     padding: 10px 15px;
@@ -11,8 +14,8 @@ const RefreshView = styled.View`
 export const Refresh = ({
     fetchCoins,
     navigation,
-    iconName = 'bookmark-outline',
-    pathForIcon = 'Home',
+    iconName = FAVORITES_PATH_ICON.iconName,
+    pathForIcon = FAVORITES_PATH_ICON.pathForIcon,
 }) => {
     return (
         <RefreshView>
@@ -20,7 +23,7 @@ export const Refresh = ({
                 <Icon
                     size={24}
                     name={iconName}
-                    color="white"
+                    color={MAIN_COLOR_TEXT}
                     onPress={() => navigation.navigate(pathForIcon)}
                 />
             </TouchableOpacity>
@@ -28,7 +31,7 @@ export const Refresh = ({
                 <Icon
                     size={24}
                     name="reload"
-                    color="white"
+                    color={MAIN_COLOR_TEXT}
                     onPress={fetchCoins}
                 />
             </TouchableOpacity>

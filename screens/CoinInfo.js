@@ -1,28 +1,30 @@
 import { View, Alert, ScrollView, StyleSheet } from 'react-native';
-import React, { useEffect } from 'react';
+import React from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { Table, Row, Rows } from 'react-native-table-component';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { LogBox } from 'react-native';
 
 import { RefreshAddToFavorites } from '../components/RefreshAddToFavorites';
 import { Loader } from '../components/Loader';
-import { HeaderText } from '../components/HeaderText';
 import { InfoTextCenter } from '../components/InfoTextCenter';
 import { ChartCoin } from '../components/ChartCoin';
 import { TableMarkets } from '../components/TableMarkets';
-
-import { TIME_PERIODS, PERIODS_OBJ } from '../constants/timePerionds';
 import { Details } from '../components/Details';
+
 import { getHistoryCoin } from '../api/getHistoryCoin';
 import { getUrlCoin, getUrlHistory, getUrlMarkets } from '../api/getUrlCoin';
-import { HEADER_MARKETS_TABLE } from '../constants/headerMarketsTable';
-import { fixedNumber, pointsInNumber } from '../api/transformNumber';
+import { pointsInNumber } from '../api/transformNumber';
 import { currencyConverter } from '../api/currencyConverter';
+
+import { TIME_PERIODS, PERIODS_OBJ } from '../constants/timePerionds';
+import { FAVORITES_KEY } from '../constants/asyncStorage';
+import { ERROR_AXIOS, ERROR_CHART } from '../constants/error';
+import { CUSTOM_COLORS } from '../constants/colors';
+import { TIME_PERIODS_DROPDOWN } from '../constants/dropdownInfo';
 
 const CoinSafeAreaView = styled.SafeAreaView`
     padding: 0 15px;
@@ -51,8 +53,8 @@ export const CoinInfo = ({ route, navigation }) => {
 
     const [isAddedToFavorites, setIsAddedToFavorites] = React.useState(false);
     const checkFavorites = async () => {
-        const arr = (await AsyncStorage.getItem('favorites'))
-            ? JSON.parse(await AsyncStorage.getItem('favorites'))
+        const arr = (await AsyncStorage.getItem(FAVORITES_KEY))
+            ? JSON.parse(await AsyncStorage.getItem(FAVORITES_KEY))
             : [];
         if (arr.find((e) => e === coin.id)) {
             setIsAddedToFavorites(true);
@@ -70,7 +72,9 @@ export const CoinInfo = ({ route, navigation }) => {
             .then(({ data }) => {
                 setCoin(data.data);
             })
-            .catch(() => Alert.alert('Error', 'Failed to load!'));
+            .catch(() =>
+                Alert.alert(ERROR_AXIOS.title, ERROR_AXIOS.description),
+            );
         axios
             .get(getUrlMarkets(idCoin))
             .then(({ data }) => {
@@ -88,7 +92,9 @@ export const CoinInfo = ({ route, navigation }) => {
                 });
                 setMarkets(arrMarkets);
             })
-            .catch(() => Alert.alert('Error', 'Failed to load!'))
+            .catch(() =>
+                Alert.alert(ERROR_AXIOS.title, ERROR_AXIOS.description),
+            )
             .finally(() => {
                 setIsLoading(false);
             });
@@ -109,7 +115,9 @@ export const CoinInfo = ({ route, navigation }) => {
                             );
                         setHistoryCoin(arrHistoryCoin);
                     })
-                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                    .catch(() =>
+                        Alert.alert(ERROR_CHART.title, ERROR_CHART.description),
+                    );
                 break;
             }
             case PERIODS_OBJ.THIRTY_MINUTES.value: {
@@ -125,7 +133,9 @@ export const CoinInfo = ({ route, navigation }) => {
                             );
                         setHistoryCoin(arrHistoryCoin);
                     })
-                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                    .catch(() =>
+                        Alert.alert(ERROR_CHART.title, ERROR_CHART.description),
+                    );
                 break;
             }
             case PERIODS_OBJ.ONE_HOUR.value: {
@@ -142,7 +152,9 @@ export const CoinInfo = ({ route, navigation }) => {
                         );
                         setHistoryCoin(arrHistoryCoin);
                     })
-                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                    .catch(() =>
+                        Alert.alert(ERROR_CHART.title, ERROR_CHART.description),
+                    );
                 break;
             }
             case PERIODS_OBJ.THREE_HOURS.value: {
@@ -160,7 +172,9 @@ export const CoinInfo = ({ route, navigation }) => {
                             );
                         setHistoryCoin(arrHistoryCoin);
                     })
-                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                    .catch(() =>
+                        Alert.alert(ERROR_CHART.title, ERROR_CHART.description),
+                    );
                 break;
             }
             case PERIODS_OBJ.SIX_HOURS.value: {
@@ -176,7 +190,9 @@ export const CoinInfo = ({ route, navigation }) => {
                             );
                         setHistoryCoin(arrHistoryCoin);
                     })
-                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                    .catch(() =>
+                        Alert.alert(ERROR_CHART.title, ERROR_CHART.description),
+                    );
                 break;
             }
             case PERIODS_OBJ.TWELVE_HOURS.value: {
@@ -192,7 +208,9 @@ export const CoinInfo = ({ route, navigation }) => {
                             );
                         setHistoryCoin(arrHistoryCoin);
                     })
-                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                    .catch(() =>
+                        Alert.alert(ERROR_CHART.title, ERROR_CHART.description),
+                    );
                 break;
             }
             case PERIODS_OBJ.ONE_DAY.value: {
@@ -207,7 +225,9 @@ export const CoinInfo = ({ route, navigation }) => {
                         );
                         setHistoryCoin(arrHistoryCoin);
                     })
-                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                    .catch(() =>
+                        Alert.alert(ERROR_CHART.title, ERROR_CHART.description),
+                    );
                 break;
             }
             case PERIODS_OBJ.SEVEN_DAYS.value: {
@@ -223,7 +243,9 @@ export const CoinInfo = ({ route, navigation }) => {
                             );
                         setHistoryCoin(arrHistoryCoin);
                     })
-                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                    .catch(() =>
+                        Alert.alert(ERROR_CHART.title, ERROR_CHART.description),
+                    );
                 break;
             }
             case PERIODS_OBJ.ONE_MONTH.value: {
@@ -239,7 +261,9 @@ export const CoinInfo = ({ route, navigation }) => {
                             );
                         setHistoryCoin(arrHistoryCoin);
                     })
-                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                    .catch(() =>
+                        Alert.alert(ERROR_CHART.title, ERROR_CHART.description),
+                    );
                 break;
             }
             case PERIODS_OBJ.THREE_MONTHS.value: {
@@ -255,7 +279,9 @@ export const CoinInfo = ({ route, navigation }) => {
                             );
                         setHistoryCoin(arrHistoryCoin);
                     })
-                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                    .catch(() =>
+                        Alert.alert(ERROR_CHART.title, ERROR_CHART.description),
+                    );
                 break;
             }
             case PERIODS_OBJ.SIX_MONTHS.value: {
@@ -271,7 +297,9 @@ export const CoinInfo = ({ route, navigation }) => {
                             );
                         setHistoryCoin(arrHistoryCoin);
                     })
-                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                    .catch(() =>
+                        Alert.alert(ERROR_CHART.title, ERROR_CHART.description),
+                    );
                 break;
             }
             case PERIODS_OBJ.ONE_YEAR.value: {
@@ -286,26 +314,31 @@ export const CoinInfo = ({ route, navigation }) => {
                         );
                         setHistoryCoin(arrHistoryCoin);
                     })
-                    .catch(() => Alert.alert('Error', 'Failed to load!'));
+                    .catch(() =>
+                        Alert.alert(ERROR_CHART.title, ERROR_CHART.description),
+                    );
                 break;
             }
         }
     };
 
     const addToFavorites = async () => {
-        const arr = await AsyncStorage.getItem('favorites');
+        const arr = await AsyncStorage.getItem(FAVORITES_KEY);
         const favorites = arr ? JSON.parse(arr) : [];
         if (favorites.find((e) => e === coin.id)) {
             let newFavorites = favorites.filter((e) => e !== coin.id);
             await AsyncStorage.setItem(
-                'favorites',
+                FAVORITES_KEY,
                 JSON.stringify(newFavorites),
             );
             setIsAddedToFavorites(false);
         } else {
             favorites.push(coin.id);
             setIsAddedToFavorites(true);
-            await AsyncStorage.setItem('favorites', JSON.stringify(favorites));
+            await AsyncStorage.setItem(
+                FAVORITES_KEY,
+                JSON.stringify(favorites),
+            );
         }
     };
 
@@ -313,7 +346,11 @@ export const CoinInfo = ({ route, navigation }) => {
     React.useEffect(changeTimePeriod, [timePeriod]);
 
     return (
-        <View style={{ backgroundColor: '#333333', height: '100%' }}>
+        <View
+            style={{
+                backgroundColor: CUSTOM_COLORS.BACKGROUND_COLOR,
+                height: '100%',
+            }}>
             <RefreshAddToFavorites
                 fetchCoins={fetchCoin}
                 addToFavorites={addToFavorites}
@@ -340,22 +377,22 @@ export const CoinInfo = ({ route, navigation }) => {
                             setOpen={setOpen}
                             setValue={setTimePeriod}
                             setItems={setItems}
-                            theme="DARK"
-                            placeholder={'Select time period'}
+                            theme={CUSTOM_COLORS.NAME_THEME}
+                            placeholder={TIME_PERIODS_DROPDOWN}
                             dropDownDirection="AUTO"
                             bottomOffset={100}
                             selectedItemContainerStyle={{
-                                backgroundColor: 'grey',
+                                backgroundColor: CUSTOM_COLORS.SELECTED,
                             }}
                             listMode="MODAL"
-                            modalTitle="Select time period"
+                            modalTitle={TIME_PERIODS_DROPDOWN}
                             modalContentContainerStyle={{
-                                backgroundColor: '#333333',
+                                backgroundColor: CUSTOM_COLORS.BACKGROUND_COLOR,
                             }}
                             style={{
-                                backgroundColor: '#333333',
+                                backgroundColor: CUSTOM_COLORS.BACKGROUND_COLOR,
                                 borderRadius: 0,
-                                borderColor: '#555555',
+                                borderColor: CUSTOM_COLORS.BORDER_DROPDOWN,
                             }}
                         />
                         <ChartCoin

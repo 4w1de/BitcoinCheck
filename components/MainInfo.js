@@ -1,19 +1,6 @@
-import { StatusBar } from 'expo-status-bar';
-import {
-    Text,
-    View,
-    Alert,
-    FlatList,
-    ActivityIndicator,
-    RefreshControl,
-    TouchableOpacity,
-    SafeAreaView,
-    ScrollView,
-} from 'react-native';
-import React, { useEffect } from 'react';
+import { View } from 'react-native';
+import React from 'react';
 import axios from 'axios';
-import * as NavigationBar from 'expo-navigation-bar';
-import styled from 'styled-components';
 
 export const CoinInfo = () => {
     const [isLoading, setIsLoading] = React.useState(true);
